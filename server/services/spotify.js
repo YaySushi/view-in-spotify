@@ -1,7 +1,9 @@
+const config = require('../config');
+
 async function getSpotifyAccessToken() {
   const spotifyAuthUrl = "https://accounts.spotify.com/api/token";
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  const clientId = config.spotifyClientId;
+  const clientSecret = config.spotifyClientSecret;
   const formBody = new URLSearchParams({
     grant_type: 'client_credentials',
   }).toString();

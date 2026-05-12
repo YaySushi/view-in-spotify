@@ -1,5 +1,7 @@
+const config = require('../config');
+
 async function getYoutubeTitle(videoId) {
-  const youtubeApiKey = process.env.YOUTUBE_API_KEY;
+  const youtubeApiKey = config.youtubeApiKey;
   const youtubeSearchUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${youtubeApiKey}&fields=items(snippet(title))&part=snippet`;
 
   const response = await fetch(youtubeSearchUrl);
