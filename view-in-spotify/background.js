@@ -48,18 +48,16 @@ function sendRequest() {
         const videoId = encodeURIComponent(getVideoId(tab.url));
         const url = `http://localhost:3001/getSong?video_id=${videoId}`;
 
-        let res;
-        let data;
         try {
-            res = await fetch(url);
-            data = await res.json();
+            const res = await fetch(url);
+            const data = await res.json();
+            if (res.ok && data && data.body) {
+                display(data.body);
+                return;
+            }
+            notifySearchError(data && data.error ? data.error : null);
         } catch {
             notifySearchError(null);
-            return;
-        }
-
-        if (res.ok && data && data.body) {
-            display(data.body);
             return;
         }
 

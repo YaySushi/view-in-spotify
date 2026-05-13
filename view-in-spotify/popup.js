@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         var artist_name_html = document.getElementById("artist_name");
         var song_name_html = document.getElementById("song_name");
 
-        description_html.textContent = request.error?.message || defaultErrorMessage();
+        description_html.textContent = request.error?.message || DEFAULT_ERROR_MESSAGE;
         clickable_anchor.setAttribute("href", "#");
         song_name_html.textContent = "";
         artist_name_html.textContent = "";
