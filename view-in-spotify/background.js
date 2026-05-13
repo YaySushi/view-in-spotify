@@ -21,17 +21,41 @@ function display(track) {
     chrome.runtime.sendMessage({ greeting: "addToHtml" }, function (response) { });
 }
 
-function sendRequest() {
-    chrome.tabs.query({ active: true}, tabs => {
-        // use current tab to get its link for video_id
-        const video_id = getVideoId(tabs[0].url);
-        // backend is not hosted anywhere so...
-        fetch(`http://localhost:3001/getSong?video_id=${video_id}`)
-            .then(res => res.json()).then(data => {
-                display(data.body);
-            })
-            .catch(error => console.error('Error:', error));
+function notifySearchError(serverError) {
+    chrome.storage.sync.set({ name: "", artist: "", uri: "", image_link: "" });
+    chrome.runtime.sendMessage(
+        { greeting: "searchError", error: serverError || null },
+        function () { }
+    );
+}
 
+function sendRequest() {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+        const tab = tabs[0];
+        if (!tab || !tab.url) {
+            notifySearchError(null);
+            return;
+        }
+
+        const videoId = encodeURIComponent(getVideoId(tab.url));
+        const url = `http://localhost:3001/getSong?video_id=${videoId}`;
+
+        let res;
+        let data;
+        try {
+            res = await fetch(url);
+            data = await res.json();
+        } catch {
+            notifySearchError(null);
+            return;
+        }
+
+        if (res.ok && data && data.body) {
+            display(data.body);
+            return;
+        }
+
+        notifySearchError(data && data.error ? data.error : null);
     });
 }
 

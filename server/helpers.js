@@ -7,6 +7,11 @@ function cleanVideoName(videoName) {
   return videoName;
 }
 
+function sendError(res, statusCode, message) {
+  return res.status(statusCode).json({ error: { message } });
+}
+
 module.exports = {
   cleanVideoName,
+  sendError,
 };
