@@ -60,7 +60,7 @@ This starts the backend server on `http://localhost:3001`.
 
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable Developer Mode at the top right.
-3. Click "Load unpacked" and select the `view-in-spotify` directory.
+3. Click "Load unpacked" and select the inner `view-in-spotify` folder (the one that contains `manifest.json`).
 
 ## Using the Extension
 
