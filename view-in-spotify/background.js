@@ -1,3 +1,5 @@
+const API_BASE = "http://localhost:3001";
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url) sendRequest();
 });
@@ -15,58 +17,53 @@ function getVideoId(url) {
     }
 }
 
-function display(track) {
-    chrome.storage.sync.set({
-        name: track['name'],
-        artist: track['artists'][0]['name'],
-        uri: track['uri'],
-        image_link: track['album']['images'][0]['url']
+async function display(track) {
+    await chrome.storage.sync.set({
+        name: track.name,
+        artist: track.artists[0].name,
+        uri: track.uri,
+        image_link: track.album.images[0].url,
     });
-    chrome.runtime.sendMessage({ greeting: "addToHtml" }, function (response) { });
+    await chrome.runtime.sendMessage({ greeting: "addToHtml" });
 }
 
-function notifySearchError(serverError) {
-    chrome.storage.sync.set({ name: "", artist: "", uri: "", image_link: "" });
-    chrome.runtime.sendMessage(
-        { greeting: "searchError", error: serverError || null },
-        function () { }
-    );
-}
-
-function sendRequest() {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-        const tab = tabs[0];
-        if (!tab || !tab.url) {
-            notifySearchError(null);
-            return;
-        }
-
-        if (!isYouTubeWatchUrl(tab.url)) {
-            return;
-        }
-
-        const videoId = encodeURIComponent(getVideoId(tab.url));
-        const url = `http://localhost:3001/getSong?video_id=${videoId}`;
-
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            if (res.ok && data && data.body) {
-                display(data.body);
-                return;
-            }
-            notifySearchError(data && data.error ? data.error : null);
-        } catch {
-            notifySearchError(null);
-            return;
-        }
-
-        notifySearchError(data && data.error ? data.error : null);
+async function notifySearchError(serverError) {
+    await chrome.storage.sync.set({ name: "", artist: "", uri: "", image_link: "" });
+    await chrome.runtime.sendMessage({
+        greeting: "searchError",
+        error: serverError || null,
     });
 }
 
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.greeting === "sendSearchRequest") sendRequest();
+async function sendRequest() {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs[0];
+    if (!tab?.url) {
+        return;
     }
-);
+
+    if (!isYouTubeWatchUrl(tab.url)) {
+        return;
+    }
+
+    const videoId = encodeURIComponent(getVideoId(tab.url));
+    const url = `${API_BASE}/getSong?video_id=${videoId}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (res.ok && data?.body) {
+            await display(data.body);
+            return;
+        }
+        await notifySearchError(data?.error ?? null);
+    } catch {
+        await notifySearchError(null);
+    }
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.greeting === "sendSearchRequest") {
+        sendRequest();
+    }
+});

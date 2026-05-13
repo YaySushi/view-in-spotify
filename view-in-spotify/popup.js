@@ -1,38 +1,29 @@
-searchBtn.addEventListener("click", async () => {
-    chrome.runtime.sendMessage(
-        {greeting: "sendSearchRequest"},
-        function(response) {}
-    );
+const searchBtn = document.getElementById("searchBtn");
+
+searchBtn.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ greeting: "sendSearchRequest" });
 });
 
 const DEFAULT_ERROR_MESSAGE = "Could not look up this song right now. Try again in a moment.";
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.greeting === "addToHtml") {
-        chrome.storage.sync.get(['name', 'artist', 'uri', 'image_link'], function (data) {
-            var clickable_anchor = document.getElementById("clickable");
-            var image = document.getElementById("song_img");
-            var artist_name_html = document.getElementById("artist_name");
-            var song_name_html = document.getElementById("song_name");
-            var description_html = document.getElementById("description");
-
-            clickable_anchor.setAttribute('href', data.uri);
-            artist_name_html.innerHTML = data.artist;
-            song_name_html.innerHTML = data.name;
-            description_html.innerHTML = 'The following song was found on Spotify:';
-            image.src = data.image_link;
-        });
+        chrome.storage.sync
+            .get(["name", "artist", "uri", "image_link"])
+            .then((data) => {
+                document.getElementById("clickable").setAttribute("href", data.uri);
+                document.getElementById("song_img").src = data.image_link;
+                document.getElementById("song_name").textContent = data.name;
+                document.getElementById("artist_name").textContent = data.artist;
+                document.getElementById("description").textContent =
+                    "The following song was found on Spotify:";
+            });
     } else if (request.greeting === "searchError") {
-        var description_html = document.getElementById("description");
-        var clickable_anchor = document.getElementById("clickable");
-        var image = document.getElementById("song_img");
-        var artist_name_html = document.getElementById("artist_name");
-        var song_name_html = document.getElementById("song_name");
-
-        description_html.textContent = request.error?.message || DEFAULT_ERROR_MESSAGE;
-        clickable_anchor.setAttribute("href", "#");
-        song_name_html.textContent = "";
-        artist_name_html.textContent = "";
-        image.src = "";
+        document.getElementById("description").textContent =
+            request.error?.message || DEFAULT_ERROR_MESSAGE;
+        document.getElementById("clickable").setAttribute("href", "#");
+        document.getElementById("song_name").textContent = "";
+        document.getElementById("artist_name").textContent = "";
+        document.getElementById("song_img").src = "";
     }
 });
