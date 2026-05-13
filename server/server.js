@@ -27,7 +27,10 @@ app.get('/getSong', async (req, res) => {
   } catch (error) {
     // it doesn't matter to the end user what error occurred (EXCEPT when no
     // matching track was found). so, we can just return 500 with a default message.
-    console.error('(/getSong) error:', error);
+    console.log(JSON.stringify({
+      severity: 'ERROR',
+      message: `(/getSong) error: ${error.stack || error.message}`,
+    }));
     return sendError(res, 500, DEFAULT_ERROR_MESSAGE);
   }
 });
