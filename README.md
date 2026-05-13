@@ -64,4 +64,4 @@ This starts the backend server on `http://localhost:3001`.
 
 ## Using the Extension
 
-Navigate to a YouTube video with music, click the extension icon, and use the popup to find the song on Spotify.
+Navigate to a YouTube video with music, click the extension icon, and use the popup to find the song on Spotify. _You may have to refresh the page if you are re-loading the extention._
