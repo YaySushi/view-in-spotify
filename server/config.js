@@ -19,5 +19,5 @@ module.exports = {
   youtubeApiKey,
   spotifyClientId,
   spotifyClientSecret,
-  port: parseInt(process.env.PORT, 10) || 3001,
+  port: parseInt(process.env.PORT, 10) || 8080,
 };
