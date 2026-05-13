@@ -2,6 +2,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url) sendRequest();
 });
 
+function isYouTubeWatchUrl(url) {
+    return url.includes("youtube.com/watch") || url.includes("youtu.be/");
+}
+
 function getVideoId(url) {
     //gets the video id from a youtube link.
     try {
@@ -34,6 +38,10 @@ function sendRequest() {
         const tab = tabs[0];
         if (!tab || !tab.url) {
             notifySearchError(null);
+            return;
+        }
+
+        if (!isYouTubeWatchUrl(tab.url)) {
             return;
         }
 
