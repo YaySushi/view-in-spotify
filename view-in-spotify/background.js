@@ -1,7 +1,7 @@
 const API_BASE = "http://localhost:3001";
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) sendRequest();
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (changeInfo.url) await sendRequest();
 });
 
 function isYouTubeWatchUrl(url) {
@@ -62,8 +62,8 @@ async function sendRequest() {
     }
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (request.greeting === "sendSearchRequest") {
-        sendRequest();
+        await sendRequest();
     }
 });
