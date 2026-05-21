@@ -26,7 +26,8 @@ async function getSpotifyAccessToken() {
   return authData.access_token;
 }
 
-async function searchSpotifyTrack(videoName, accessToken) {
+async function getSpotifyTrack(videoName) {
+  const accessToken = await getSpotifyAccessToken();
   const params = new URLSearchParams({ q: videoName, type: 'track' });
   const searchResponse = await fetch(`https://api.spotify.com/v1/search?${params}`, {
     method: 'GET',
@@ -49,6 +50,5 @@ async function searchSpotifyTrack(videoName, accessToken) {
 }
 
 module.exports = {
-  getSpotifyAccessToken,
-  searchSpotifyTrack,
+  getSpotifyTrack,
 };

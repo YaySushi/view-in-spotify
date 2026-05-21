@@ -1,7 +1,7 @@
 const config = require('./config');
 const express = require('express');
 const { cleanVideoName, sendError } = require('./helpers');
-const { searchSpotifyTrack, getSpotifyAccessToken } = require('./services/spotify');
+const { getSpotifyTrack } = require('./services/spotify');
 const { getYoutubeTitle } = require('./services/youtube');
 
 const app = express();
@@ -16,8 +16,7 @@ app.get('/getSong', async (req, res) => {
     const rawTitle = await getYoutubeTitle(videoId);
     const videoName = cleanVideoName(rawTitle);
 
-    const accessToken = await getSpotifyAccessToken();
-    const tracks = await searchSpotifyTrack(videoName, accessToken);
+    const tracks = await getSpotifyTrack(videoName);
     if (tracks.length === 0) {
       return sendError(res, 404, 'No matching track found on Spotify.');
     }
